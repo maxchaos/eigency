@@ -345,6 +345,8 @@ cdef extern from "eigency_cpp.h" namespace "eigency":
      cdef cppclass Map[DenseTypeShort](PlainObjectBase):
          Map() except +
          Map(np.ndarray array) except +
+         DenseTypeShort toMatrix() except +
+         DenseTypeShort* toMatrixPtr() except +
 
      cdef cppclass FlattenedMap[DenseType, dtype, Rows, Cols]:
          FlattenedMap() except +

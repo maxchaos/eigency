@@ -450,7 +450,15 @@ public:
 
     operator MatrixType() const {
         return MatrixType(static_cast<Base>(*this));
-    }    
+    }
+
+    MatrixType toMatrix() {
+      return new MatrixType(static_cast<Base>(*this));
+    }
+
+    MatrixType* toMatrixPtr() {
+      return new MatrixType(static_cast<Base>(*this));
+    }
 };
 
 
