@@ -362,8 +362,8 @@ cdef extern from "eigency_cpp.h" namespace "eigency":
 
      cdef np.ndarray ndarray_view(PlainObjectBase &)
      cdef np.ndarray ndarray_copy(PlainObjectBase &)
+     cdef np.ndarray ndarray_copy(PlainObjectBase *)
      cdef np.ndarray ndarray(PlainObjectBase &)
-
 
 cdef extern from "eigency_cpp.h" namespace "Eigen":
 
@@ -449,7 +449,7 @@ cdef extern from "eigency_cpp.h" namespace "Eigen":
           pass
 
      cdef cppclass VectorXf(PlainObjectBase):
-          pass
+         pass
 
      cdef cppclass RowVector1f(PlainObjectBase):
           pass
@@ -479,7 +479,10 @@ cdef extern from "eigency_cpp.h" namespace "Eigen":
           pass
 
      cdef cppclass MatrixXf(PlainObjectBase):
-          pass
+          # pass
+          float* data()
+          int cols()
+          int rows()
 
      cdef cppclass Vector1d(PlainObjectBase):
           pass

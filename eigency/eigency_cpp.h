@@ -247,6 +247,11 @@ inline PyArrayObject *ndarray_copy(const Eigen::PlainObjectBase<Derived> &m) {
     import_eigency__conversions();
     return _ndarray_copy(m.data(), m.rows(), m.cols(), m.IsRowMajor);
 }
+template <typename Derived>
+inline PyArrayObject *ndarray_copy(const Eigen::PlainObjectBase<Derived> *m) {
+    import_eigency__conversions();
+    return _ndarray_copy(m->data(), m->rows(), m->cols(), m->IsRowMajor);
+}
 
 template <typename Derived, int MapOptions, typename Stride>
 inline PyArrayObject *ndarray(Eigen::Map<Derived, MapOptions, Stride> &m) {
@@ -407,25 +412,21 @@ public:
         : Base(data, rows, cols) {}
 
     Map(PyArrayObject *object)
-        : Base((PyObject*)object == Py_None? NULL: (Scalar *)object->data,
-               // ROW: If array is in row-major order, transpose (see README)
-               (PyObject*)object == Py_None? 0 :
-               (!PyArray_IS_F_CONTIGUOUS(object)
-                ? ((object->nd == 1)
-                   ? 1  // ROW: If 1D row-major numpy array, set to 1 (row vector)
-                   : object->dimensions[1])
-                : object->dimensions[0]),
-               // COLUMN: If array is in row-major order: transpose (see README)
-               (PyObject*)object == Py_None? 0 :
-               (!PyArray_IS_F_CONTIGUOUS(object)
-                ? object->dimensions[0]
-                : ((object->nd == 1)
-                   ? 1  // COLUMN: If 1D col-major numpy array, set to length (column vector)
-                   : object->dimensions[1]))) {
-
-        if (((PyObject*)object != Py_None) && !PyArray_ISONESEGMENT(object))
-            throw std::invalid_argument("Numpy array must be a in one contiguous segment to be able to be transferred to a Eigen Map.");
-    }
+      : Base((Scalar *)object->data,
+	     // ROW: If array is in row-major order, transpose (see README)
+	     // ROW: If 1D row-major numpy array, set to 1 (row vector)
+	     (!PyArray_IS_F_CONTIGUOUS(object)) ?
+	     ((object->nd == 1) ? 1 : object->dimensions[1]) : 
+	     object->dimensions[0],
+	     // COLUMN: If array is in row-major order: transpose (see README)
+	     // COLUMN: If 1D col-major numpy array, set to length (column vector)
+	     (!PyArray_IS_F_CONTIGUOUS(object) ?
+	      object->dimensions[0] :
+	      ((object->nd == 1) ? 1 : object->dimensions[1])))
+      {
+	if (((PyObject*)object != Py_None) && !PyArray_ISONESEGMENT(object))
+	  throw std::invalid_argument("Numpy array must be a in one contiguous segment to be able to be transferred to a Eigen Map.");
+      }
     
     Map &operator=(const Map &other) {
         // Replace the memory that we point to (not a memory allocation)
@@ -465,6 +466,3 @@ public:
 }
 
 #endif
-
-
-
