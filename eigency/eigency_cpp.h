@@ -454,7 +454,7 @@ public:
     }
 
     MatrixType toMatrix() {
-      return new MatrixType(static_cast<Base>(*this));
+      return MatrixType(static_cast<Base>(*this));
     }
 
     MatrixType* toMatrixPtr() {
