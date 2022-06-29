@@ -14,10 +14,12 @@ __eigen_lib_dir__ = join(basename(__eigen_dir__), 'Eigen')
 extensions = [
     Extension("eigency.conversions", ["eigency/conversions.pyx"],
               include_dirs = [np.get_include(), __eigen_dir__],
+              extra_compile_args=["-O2", "-std=c++11"],
               language="c++"
     ),
     Extension("eigency.core", ["eigency/core.pyx"],
               include_dirs = [np.get_include(), __eigen_dir__],
+              extra_compile_args=["-O2", "-std=c++11"],
               language="c++"
     )
 ]
